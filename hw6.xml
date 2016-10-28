@@ -1,0 +1,91 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE nta PUBLIC '-//Uppaal Team//DTD Flat System 1.1//EN' 'http://www.it.uu.se/research/group/darts/uppaal/flat-1_2.dtd'>
+<nta>
+	<declaration>// Place global declarations here.
+int chairs = 3;
+clock x;
+bool sleeping = true;</declaration>
+	<template>
+		<name>customer</name>
+		<location id="id0" x="-204" y="8">
+			<name x="-272" y="0">leave</name>
+		</location>
+		<location id="id1" x="34" y="8">
+			<name x="-8" y="25">getting_haircut</name>
+		</location>
+		<location id="id2" x="34" y="-212">
+			<name x="51" y="-221">waiting</name>
+		</location>
+		<location id="id3" x="-204" y="-212">
+			<name x="-263" y="-221">arrive</name>
+		</location>
+		<init ref="id3"/>
+		<transition>
+			<source ref="id1"/>
+			<target ref="id0"/>
+			<label kind="synchronisation" x="-85" y="17">x?</label>
+		</transition>
+		<transition>
+			<source ref="id3"/>
+			<target ref="id0"/>
+		</transition>
+		<transition>
+			<source ref="id2"/>
+			<target ref="id1"/>
+			<label kind="synchronisation" x="42" y="-119">x?</label>
+		</transition>
+		<transition>
+			<source ref="id3"/>
+			<target ref="id2"/>
+			<label kind="guard" x="-204" y="-246">chairs &gt; 0</label>
+		</transition>
+		<transition>
+			<source ref="id3"/>
+			<target ref="id1"/>
+			<label kind="guard" x="-195" y="-195">sleeping == true</label>
+			<label kind="assignment" x="-144" y="-110">sleeping := false</label>
+		</transition>
+	</template>
+	<template>
+		<name x="5" y="5">barber</name>
+		<declaration>// Place local declarations here.
+bool is_sleeping = true;</declaration>
+		<location id="id4" x="42" y="-161">
+			<name x="59" y="-170">cutting_hair</name>
+		</location>
+		<location id="id5" x="-221" y="-161">
+			<name x="-297" y="-170">sleeping</name>
+		</location>
+		<init ref="id5"/>
+		<transition>
+			<source ref="id4"/>
+			<target ref="id5"/>
+			<label kind="guard" x="-51" y="-153">chairs &gt;= 3</label>
+			<label kind="synchronisation" x="-76" y="-59">x!</label>
+			<label kind="assignment" x="-127" y="-34">sleeping := true</label>
+			<nail x="-34" y="-42"/>
+			<nail x="-110" y="-42"/>
+		</transition>
+		<transition>
+			<source ref="id4"/>
+			<target ref="id4"/>
+			<label kind="synchronisation" x="178" y="-178">x!</label>
+			<nail x="170" y="-255"/>
+			<nail x="170" y="-76"/>
+		</transition>
+		<transition>
+			<source ref="id5"/>
+			<target ref="id4"/>
+			<nail x="-127" y="-289"/>
+			<nail x="-25" y="-289"/>
+		</transition>
+	</template>
+	<system>// Place template instantiations here.
+Barber = barber();
+Customer = customer();
+// List one or more processes to be composed into a system.
+system barber, customer;
+    </system>
+	<queries>
+	</queries>
+</nta>
