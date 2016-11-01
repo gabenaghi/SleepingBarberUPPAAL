@@ -26,21 +26,30 @@ chan semGo [M][N];
     numSeats--;
 }</declaration>
 		<location id="id0" x="-408" y="-59">
+			<name x="-418" y="-93">leave</name>
+			<urgent/>
 		</location>
 		<location id="id1" x="178" y="59">
+			<urgent/>
 		</location>
 		<location id="id2" x="178" y="-59">
+			<urgent/>
 		</location>
 		<location id="id3" x="76" y="136">
+			<urgent/>
 		</location>
 		<location id="id4" x="178" y="-178">
+			<urgent/>
 		</location>
 		<location id="id5" x="17" y="-289">
+			<urgent/>
 		</location>
 		<location id="id6" x="-272" y="-289">
+			<urgent/>
 		</location>
 		<location id="id7" x="-535" y="-136">
 			<name x="-594" y="-145">arrive</name>
+			<urgent/>
 		</location>
 		<init ref="id7"/>
 		<transition>
@@ -93,57 +102,63 @@ void incr_seats(){
     numSeats++;
 }</declaration>
 		<location id="id8" x="-204" y="59">
+			<urgent/>
 		</location>
-		<location id="id9" x="-280" y="-51">
+		<location id="id9" x="-204" y="-136">
+			<urgent/>
 		</location>
-		<location id="id10" x="280" y="-153">
+		<location id="id10" x="153" y="-153">
+			<urgent/>
 		</location>
 		<location id="id11" x="153" y="-323">
+			<urgent/>
 		</location>
-		<location id="id12" x="-85" y="-365">
+		<location id="id12" x="-17" y="-323">
+			<urgent/>
 		</location>
-		<location id="id13" x="161" y="76">
+		<location id="id13" x="153" y="59">
+			<urgent/>
 		</location>
-		<location id="id14" x="-263" y="-289">
-			<name x="-339" y="-298">sleeping</name>
+		<location id="id14" x="-204" y="-323">
+			<name x="-280" y="-332">sleeping</name>
+			<urgent/>
 		</location>
 		<init ref="id14"/>
 		<transition>
 			<source ref="id9"/>
 			<target ref="id14"/>
-			<label kind="synchronisation" x="-340" y="-153">semSignal[accessWRSeats][barber_id]!</label>
+			<label kind="synchronisation" x="-476" y="-229">semSignal[accessWRSeats][barber_id]!</label>
 		</transition>
 		<transition>
 			<source ref="id8"/>
 			<target ref="id9"/>
-			<label kind="synchronisation" x="-314" y="-17">semSignal[barberReady][barber_id]!</label>
+			<label kind="synchronisation" x="-467" y="-42">semSignal[barberReady][barber_id]!</label>
 		</transition>
 		<transition>
 			<source ref="id13"/>
 			<target ref="id8"/>
-			<label kind="assignment" x="-93" y="42">incr_seats()</label>
+			<label kind="assignment" x="-68" y="34">incr_seats()</label>
 		</transition>
 		<transition>
 			<source ref="id10"/>
 			<target ref="id13"/>
-			<label kind="synchronisation" x="59" y="-25">semGo[accessWRSeats][barber_id]?</label>
+			<label kind="synchronisation" x="161" y="-59">semGo[accessWRSeats][barber_id]?</label>
 		</transition>
 		<transition>
 			<source ref="id11"/>
 			<target ref="id10"/>
-			<label kind="synchronisation" x="119" y="-263">semWait[accessWRSeats][barber_id]!</label>
+			<label kind="synchronisation" x="161" y="-246">semWait[accessWRSeats][barber_id]!</label>
 		</transition>
 		<transition>
 			<source ref="id12"/>
 			<target ref="id11"/>
-			<label kind="synchronisation" x="-51" y="-399">semGo[custReady][barber_id]?</label>
+			<label kind="synchronisation" x="-8" y="-357">semGo[custReady][barber_id]?</label>
 		</transition>
 		<transition>
 			<source ref="id14"/>
 			<target ref="id12"/>
-			<label kind="synchronisation" x="-272" y="-340">semWait[custReady][barber_id]!</label>
-			<nail x="-204" y="-314"/>
-			<nail x="-170" y="-331"/>
+			<label kind="synchronisation" x="-238" y="-357">semWait[custReady][barber_id]!</label>
+			<nail x="-187" y="-323"/>
 		</transition>
 	</template>
 	<template>
