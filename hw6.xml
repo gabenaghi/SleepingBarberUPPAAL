@@ -3,9 +3,10 @@
 <nta>
 	<declaration>// Place global declarations here.
 int numSeats=3;
+const int numCustomers = 4;
 
 const int M = 3; // # semaphores
-const int N = 2; // # processes (# customers + 1 barber)
+const int N = 5; // # processes (# customers + 1 barber)
 
 //semaphore names
 const int barberReady = 0;
@@ -14,7 +15,7 @@ const int custReady = 2;
 
 //names of processes
 const int barber_id = 0;
-const int customer_id = 1; //change later to 1 ... N
+//const int customer_id = 1; //change later to 1 ... N
 
 chan semWait[M][N];
 chan semSignal[M][N];
@@ -22,7 +23,10 @@ chan semGo [M][N];
 </declaration>
 	<template>
 		<name>customer</name>
-		<declaration>void decr_seats(){
+		<parameter>const int id</parameter>
+		<declaration>int customer_id = id;
+
+void decr_seats(){
     numSeats--;
 }</declaration>
 		<location id="id0" x="-408" y="-59">
@@ -162,7 +166,7 @@ void incr_seats(){
 		</transition>
 	</template>
 	<template>
-		<name>Semaphore</name>
+		<name>BinarySemaphore</name>
 		<parameter>const int id,  const int queue_size, const int init_val</parameter>
 		<declaration>//The value of the semaphore
 bool value = init_val;
@@ -280,18 +284,138 @@ deQueue()</label>
 			<nail x="512" y="64"/>
 		</transition>
 	</template>
+	<template>
+		<name>Semaphore</name>
+		<parameter>const int id,  const int queue_size, const int init_val</parameter>
+		<declaration>//The value of the semaphore
+int count = init_val;
+//The queue of the semaphore
+//value -1 denotes an empty array entry
+int[-1,N-1] queue[queue_size];
+//An auxiliary variable used to temporarily store process id
+meta int[0,N-1] q;
+
+void initialize ()
+{
+  for (i : int[0,queue_size-1])
+      {queue[i] = -1;}
+}
+
+void deQueue ()
+{
+  for (i : int[1,queue_size-1])
+    queue[i-1] = queue[i];
+  queue[queue_size-1] = -1;
+}
+
+void enQueue (int p)
+{
+  int i = 0;
+  while (queue[i]&gt;=0){i++;};
+  queue[i]=p;
+}
+
+int[0,N-1] headQueue ( )
+{
+  return queue[0];
+}
+
+bool fullQueue ( )
+{
+  for (i : int[0,queue_size-1])
+   {
+     if (queue[i]==-1) {return false;}
+   }
+  return true;
+}</declaration>
+		<location id="id19" x="384" y="64">
+			<committed/>
+		</location>
+		<location id="id20" x="608" y="320">
+			<committed/>
+		</location>
+		<location id="id21" x="352" y="96">
+			<name x="288" y="64">overflow</name>
+		</location>
+		<location id="id22" x="480" y="192">
+		</location>
+		<init ref="id19"/>
+		<transition>
+			<source ref="id19"/>
+			<target ref="id22"/>
+			<label kind="assignment" x="408" y="72">initialize()</label>
+		</transition>
+		<transition>
+			<source ref="id22"/>
+			<target ref="id22"/>
+			<label kind="select" x="272" y="192">p:int[0,N-1]</label>
+			<label kind="guard" x="272" y="208">count&gt;=0</label>
+			<label kind="synchronisation" x="272" y="224">semSignal[id][p]?</label>
+			<label kind="assignment" x="272" y="240">count++</label>
+			<nail x="352" y="192"/>
+			<nail x="352" y="224"/>
+		</transition>
+		<transition>
+			<source ref="id22"/>
+			<target ref="id20"/>
+			<label kind="select" x="552" y="104">p:int[0,N-1]</label>
+			<label kind="guard" x="552" y="120">count&gt;0</label>
+			<label kind="synchronisation" x="552" y="136">semWait[id][p]?</label>
+			<label kind="assignment" x="552" y="152">count--,
+q=p</label>
+			<nail x="608" y="192"/>
+		</transition>
+		<transition>
+			<source ref="id22"/>
+			<target ref="id21"/>
+			<label kind="select" x="248" y="112">p:int[0,N-1]</label>
+			<label kind="guard" x="248" y="128">count&lt;=0 &amp;&amp; fullQueue()</label>
+			<label kind="synchronisation" x="248" y="144">semWait[id][p]?</label>
+		</transition>
+		<transition>
+			<source ref="id20"/>
+			<target ref="id22"/>
+			<label kind="synchronisation" x="512" y="208">semGo[id][q]!</label>
+		</transition>
+		<transition>
+			<source ref="id22"/>
+			<target ref="id20"/>
+			<label kind="select" x="360" y="280">p:int[0,N-1]</label>
+			<label kind="guard" x="360" y="296">count&lt;0</label>
+			<label kind="synchronisation" x="360" y="312">semSignal[id][p]?</label>
+			<label kind="assignment" x="360" y="328">count++,
+q=headQueue(),
+deQueue()</label>
+			<nail x="480" y="320"/>
+		</transition>
+		<transition>
+			<source ref="id22"/>
+			<target ref="id22"/>
+			<label kind="select" x="480" y="-24">p:int[0,N-1]</label>
+			<label kind="guard" x="480" y="-8">count&lt;=0 &amp;&amp; not fullQueue()</label>
+			<label kind="synchronisation" x="480" y="8">semWait[id][p]?</label>
+			<label kind="assignment" x="480" y="24">count--,
+enQueue(p)</label>
+			<nail x="480" y="64"/>
+			<nail x="512" y="64"/>
+		</transition>
+	</template>
 	<system>// Place template instantiations here.
-sem_barberReady = Semaphore(barberReady, 1, 0);
-sem_accessWRSeats = Semaphore(accessWRSeats, 1, 1);
-sem_custReady = Semaphore(custReady, 1, 0);
+sem_barberReady = Semaphore(barberReady, 5, 0);
+sem_accessWRSeats = Semaphore(accessWRSeats, 5, 1); // queue size should be big here?
+sem_custReady = Semaphore(custReady, 5, 0);
 
 Barber = barber();
 
 //gantt
-Customer = customer();
+Customer1 = customer(1);
+Customer2 = customer(2);
+Customer3 = customer(3);
+Customer4 = customer(4);
+
 
 // List one or more processes to be composed into a system.
-system barber, customer;
+system Barber, Customer1, Customer2, Customer3, Customer4, sem_barberReady, sem_accessWRSeats, sem_custReady;
     </system>
 	<queries>
 	</queries>
