@@ -7,6 +7,7 @@ const int numCustomers = 4;
 
 const int M = 3; // # semaphores
 const int N = 5; // # processes (# customers + 1 barber)
+typedef int [1,N-1] cust_id;
 
 //semaphore names
 const int barberReady = 0;
@@ -20,18 +21,18 @@ const int barber_id = 0;
 chan semWait[M][N];
 chan semSignal[M][N];
 chan semGo [M][N];
+
 </declaration>
 	<template>
 		<name>customer</name>
 		<parameter>const int id</parameter>
 		<declaration>int customer_id = id;
-
+clock x;
 void decr_seats(){
     numSeats--;
 }</declaration>
 		<location id="id0" x="-408" y="-59">
-			<name x="-418" y="-93">leave</name>
-			<urgent/>
+			<name x="-425" y="-93">leave</name>
 		</location>
 		<location id="id1" x="178" y="59">
 			<urgent/>
@@ -53,13 +54,24 @@ void decr_seats(){
 		</location>
 		<location id="id7" x="-535" y="-136">
 			<name x="-594" y="-145">arrive</name>
-			<urgent/>
 		</location>
 		<init ref="id7"/>
+		<transition>
+			<source ref="id0"/>
+			<target ref="id7"/>
+			<label kind="guard" x="-518" y="-93">x&gt;100</label>
+		</transition>
+		<transition>
+			<source ref="id0"/>
+			<target ref="id0"/>
+			<nail x="-374" y="-8"/>
+			<nail x="-433" y="-8"/>
+		</transition>
 		<transition>
 			<source ref="id3"/>
 			<target ref="id0"/>
 			<label kind="synchronisation" x="-357" y="59">semGo[barberReady][customer_id]?</label>
+			<label kind="assignment" x="-255" y="76">x:=0</label>
 		</transition>
 		<transition>
 			<source ref="id1"/>
@@ -81,6 +93,7 @@ void decr_seats(){
 			<target ref="id0"/>
 			<label kind="guard" x="-102" y="-272">numSeats &lt;= 0</label>
 			<label kind="synchronisation" x="-365" y="-187">semSignal[accessWRSeats][customer_id]!</label>
+			<label kind="assignment" x="-390" y="-174">x:=0</label>
 		</transition>
 		<transition>
 			<source ref="id5"/>
@@ -125,7 +138,6 @@ void incr_seats(){
 		</location>
 		<location id="id14" x="-204" y="-323">
 			<name x="-280" y="-332">sleeping</name>
-			<urgent/>
 		</location>
 		<init ref="id14"/>
 		<transition>
@@ -293,7 +305,7 @@ int count = init_val;
 //value -1 denotes an empty array entry
 int[-1,N-1] queue[queue_size];
 //An auxiliary variable used to temporarily store process id
-meta int[0,N-1] q;
+int[0,N-1] q;
 
 void initialize ()
 {
@@ -407,16 +419,20 @@ sem_custReady = Semaphore(custReady, 5, 0);
 
 Barber = barber();
 
-//gantt
 Customer1 = customer(1);
 Customer2 = customer(2);
 Customer3 = customer(3);
 Customer4 = customer(4);
 
-
 // List one or more processes to be composed into a system.
 system Barber, Customer1, Customer2, Customer3, Customer4, sem_barberReady, sem_accessWRSeats, sem_custReady;
-    </system>
+</system>
 	<queries>
+		<query>
+			<formula>A[] not deadlock
+			</formula>
+			<comment>
+			</comment>
+		</query>
 	</queries>
 </nta>
