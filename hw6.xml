@@ -6,7 +6,7 @@ int numSeats=3;
 const int numCustomers = 4;
 
 const int M = 3; // # semaphores
-const int N = 5; // # processes (# customers + 1 barber)
+const int N = 101; // # processes (# customers + 1 barber)
 typedef int [1,N-1] cust_id;
 
 //semaphore names
@@ -413,9 +413,9 @@ enQueue(p)</label>
 		</transition>
 	</template>
 	<system>// Place template instantiations here.
-sem_barberReady = Semaphore(barberReady, 5, 0);
-sem_accessWRSeats = Semaphore(accessWRSeats, 5, 1); // queue size should be big here?
-sem_custReady = Semaphore(custReady, 5, 0);
+sem_barberReady = Semaphore(barberReady, 101, 0);
+sem_accessWRSeats = Semaphore(accessWRSeats, 101, 1); // queue size should be big here?
+sem_custReady = Semaphore(custReady, 101, 0);
 
 Barber = barber();
 
@@ -423,9 +423,106 @@ Customer1 = customer(1);
 Customer2 = customer(2);
 Customer3 = customer(3);
 Customer4 = customer(4);
+Customer5 = customer(5);
+Customer6 = customer(6);
+Customer7 = customer(7);
+Customer8 = customer(8);
+Customer9 = customer(9);
+Customer10 = customer(10);
+Customer11 = customer(11);
+Customer12 = customer(12);
+Customer13 = customer(13);
+Customer14 = customer(14);
+Customer15 = customer(15);
+Customer16 = customer(16);
+Customer17 = customer(17);
+Customer18 = customer(18);
+Customer19 = customer(19);
+Customer20 = customer(20);
+Customer21 = customer(21);
+Customer22 = customer(22);
+Customer23 = customer(23);
+Customer24 = customer(24);
+Customer25 = customer(25);
+Customer26 = customer(26);
+Customer27 = customer(27);
+Customer28 = customer(28);
+Customer29 = customer(29);
+Customer30 = customer(30);
+Customer31 = customer(31);
+Customer32 = customer(32);
+Customer33 = customer(33);
+Customer34 = customer(34);
+Customer35 = customer(35);
+Customer36 = customer(36);
+Customer37 = customer(37);
+Customer38 = customer(38);
+Customer39 = customer(39);
+Customer40 = customer(40);
+Customer41 = customer(41);
+Customer42 = customer(42);
+Customer43 = customer(43);
+Customer44 = customer(44);
+Customer45 = customer(45);
+Customer46 = customer(46);
+Customer47 = customer(47);
+Customer48 = customer(48);
+Customer49 = customer(49);
+Customer50 = customer(50);
+Customer51 = customer(51);
+Customer52 = customer(52);
+Customer53 = customer(53);
+Customer54 = customer(54);
+Customer55 = customer(55);
+Customer56 = customer(56);
+Customer57 = customer(57);
+Customer58 = customer(58);
+Customer59 = customer(59);
+Customer60 = customer(60);
+Customer61 = customer(61);
+Customer62 = customer(62);
+Customer63 = customer(63);
+Customer64 = customer(64);
+Customer65 = customer(65);
+Customer66 = customer(66);
+Customer67 = customer(67);
+Customer68 = customer(68);
+Customer69 = customer(69);
+Customer70 = customer(70);
+Customer71 = customer(71);
+Customer72 = customer(72);
+Customer73 = customer(73);
+Customer74 = customer(74);
+Customer75 = customer(75);
+Customer76 = customer(76);
+Customer77 = customer(77);
+Customer78 = customer(78);
+Customer79 = customer(79);
+Customer80 = customer(80);
+Customer81 = customer(81);
+Customer82 = customer(82);
+Customer83 = customer(83);
+Customer84 = customer(84);
+Customer85 = customer(85);
+Customer86 = customer(86);
+Customer87 = customer(87);
+Customer88 = customer(88);
+Customer89 = customer(89);
+Customer90 = customer(90);
+Customer91 = customer(91);
+Customer92 = customer(92);
+Customer93 = customer(93);
+Customer94 = customer(94);
+Customer95 = customer(95);
+Customer96 = customer(96);
+Customer97 = customer(97);
+Customer98 = customer(98);
+Customer99 = customer(99);
+Customer100 = customer(100);
+
 
 // List one or more processes to be composed into a system.
-system Barber, Customer1, Customer2, Customer3, Customer4, sem_barberReady, sem_accessWRSeats, sem_custReady;
+system Barber, sem_barberReady, sem_accessWRSeats, sem_custReady , Customer1, Customer2, Customer3, Customer4, Customer5, Customer6, Customer7, Customer8, Customer9, Customer10 , Customer11 , Customer12 , Customer13 , Customer14 , Customer15 , Customer16 , Customer17 , Customer18 , Customer19 , Customer20 , Customer21 , Customer22 , Customer23 , Customer24 , Customer25 , Customer26 , Customer27 , Customer28 , Customer29 , Customer30 , Customer31 , Customer32 , Customer33 , Customer34 , Customer35 , Customer36 , Customer37 , Customer38 , Customer39 , Customer40 , Customer41 , Customer42 , Customer43 , Customer44 , Customer45 , Customer46 , Customer47 , Customer48 , Customer49 , Customer50 , Customer51 , Customer52 , Customer53 , Customer54 , Customer55 , Customer56 , Customer57 , Customer58 , Customer59 , Customer60 , Customer61 , Customer62 , Customer63 , Customer64 , Customer65 , Customer66 , Customer67 , Customer68 , Customer69 , Customer70 , Customer71 , Customer72 , Customer73 , Customer74 , Customer75 , Customer76 , Customer77 , Customer78 , Customer79 , Customer80 , Customer81 , Customer82 , Customer83 , Customer84 , Customer85 , Customer86 , Customer87 , Customer88 , Customer89 , Customer90 , Customer91 , Customer92 , Customer93 , Customer94 , Customer95 , Customer96 , Customer97 , Customer98 , Customer99 , Customer100 ;
 </system>
 	<queries>
 		<query>
