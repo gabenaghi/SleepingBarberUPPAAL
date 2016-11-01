@@ -2,87 +2,279 @@
 <!DOCTYPE nta PUBLIC '-//Uppaal Team//DTD Flat System 1.1//EN' 'http://www.it.uu.se/research/group/darts/uppaal/flat-1_2.dtd'>
 <nta>
 	<declaration>// Place global declarations here.
-int chairs = 3;
-clock x;
-bool sleeping = true;</declaration>
+int numSeats=3;
+
+const int M = 3; // # semaphores
+const int N = 2; // # processes (# customers + 1 barber)
+
+//semaphore names
+const int barberReady = 0;
+const int accessWRSeats = 1;
+const int custReady = 2;
+
+//names of processes
+const int barber_id = 0;
+const int customer_id = 1; //change later to 1 ... N
+
+chan semWait[M][N];
+chan semSignal[M][N];
+chan semGo [M][N];
+</declaration>
 	<template>
 		<name>customer</name>
-		<location id="id0" x="-204" y="8">
-			<name x="-272" y="0">leave</name>
+		<declaration>void decr_seats(){
+    numSeats--;
+}</declaration>
+		<location id="id0" x="-408" y="-59">
 		</location>
-		<location id="id1" x="34" y="8">
-			<name x="-8" y="25">getting_haircut</name>
+		<location id="id1" x="178" y="59">
 		</location>
-		<location id="id2" x="34" y="-212">
-			<name x="51" y="-221">waiting</name>
+		<location id="id2" x="178" y="-59">
 		</location>
-		<location id="id3" x="-204" y="-212">
-			<name x="-263" y="-221">arrive</name>
+		<location id="id3" x="76" y="136">
 		</location>
-		<init ref="id3"/>
-		<transition>
-			<source ref="id1"/>
-			<target ref="id0"/>
-			<label kind="synchronisation" x="-85" y="17">x?</label>
-		</transition>
+		<location id="id4" x="178" y="-178">
+		</location>
+		<location id="id5" x="17" y="-289">
+		</location>
+		<location id="id6" x="-272" y="-289">
+		</location>
+		<location id="id7" x="-535" y="-136">
+			<name x="-594" y="-145">arrive</name>
+		</location>
+		<init ref="id7"/>
 		<transition>
 			<source ref="id3"/>
 			<target ref="id0"/>
+			<label kind="synchronisation" x="-357" y="59">semGo[barberReady][customer_id]?</label>
+		</transition>
+		<transition>
+			<source ref="id1"/>
+			<target ref="id3"/>
+			<label kind="synchronisation" x="94" y="80">semWait[barberReady][customer_id]!</label>
 		</transition>
 		<transition>
 			<source ref="id2"/>
 			<target ref="id1"/>
-			<label kind="synchronisation" x="42" y="-119">x?</label>
+			<label kind="synchronisation" x="178" y="-17">semSignal[accessWRSeats][customer_id]!</label>
 		</transition>
 		<transition>
-			<source ref="id3"/>
+			<source ref="id4"/>
 			<target ref="id2"/>
-			<label kind="guard" x="-204" y="-246">chairs &gt; 0</label>
+			<label kind="synchronisation" x="178" y="-135">semSignal[custReady][customer_id]!</label>
 		</transition>
 		<transition>
-			<source ref="id3"/>
-			<target ref="id1"/>
-			<label kind="guard" x="-195" y="-195">sleeping == true</label>
-			<label kind="assignment" x="-144" y="-110">sleeping := false</label>
+			<source ref="id5"/>
+			<target ref="id0"/>
+			<label kind="guard" x="-102" y="-272">numSeats &lt;= 0</label>
+			<label kind="synchronisation" x="-365" y="-187">semSignal[accessWRSeats][customer_id]!</label>
+		</transition>
+		<transition>
+			<source ref="id5"/>
+			<target ref="id4"/>
+			<label kind="guard" x="17" y="-272">numSeats &gt; 0</label>
+			<label kind="assignment" x="85" y="-255">decr_seats()</label>
+		</transition>
+		<transition>
+			<source ref="id6"/>
+			<target ref="id5"/>
+			<label kind="synchronisation" x="-254" y="-310">semGo[accessWRSeats][customer_id]?</label>
+		</transition>
+		<transition>
+			<source ref="id7"/>
+			<target ref="id6"/>
+			<label kind="synchronisation" x="-612" y="-246">semWait[accessWRSeats][customer_id]!</label>
 		</transition>
 	</template>
 	<template>
 		<name x="5" y="5">barber</name>
 		<declaration>// Place local declarations here.
-bool is_sleeping = true;</declaration>
-		<location id="id4" x="42" y="-161">
-			<name x="59" y="-170">cutting_hair</name>
+void incr_seats(){
+    numSeats++;
+}</declaration>
+		<location id="id8" x="-204" y="59">
 		</location>
-		<location id="id5" x="-221" y="-161">
-			<name x="-297" y="-170">sleeping</name>
+		<location id="id9" x="-280" y="-51">
 		</location>
-		<init ref="id5"/>
+		<location id="id10" x="280" y="-153">
+		</location>
+		<location id="id11" x="153" y="-323">
+		</location>
+		<location id="id12" x="-85" y="-365">
+		</location>
+		<location id="id13" x="161" y="76">
+		</location>
+		<location id="id14" x="-263" y="-289">
+			<name x="-339" y="-298">sleeping</name>
+		</location>
+		<init ref="id14"/>
 		<transition>
-			<source ref="id4"/>
-			<target ref="id5"/>
-			<label kind="guard" x="-51" y="-153">chairs &gt;= 3</label>
-			<label kind="synchronisation" x="-76" y="-59">x!</label>
-			<label kind="assignment" x="-127" y="-34">sleeping := true</label>
-			<nail x="-34" y="-42"/>
-			<nail x="-110" y="-42"/>
+			<source ref="id9"/>
+			<target ref="id14"/>
+			<label kind="synchronisation" x="-340" y="-153">semSignal[accessWRSeats][barber_id]!</label>
 		</transition>
 		<transition>
-			<source ref="id4"/>
-			<target ref="id4"/>
-			<label kind="synchronisation" x="178" y="-178">x!</label>
-			<nail x="170" y="-255"/>
-			<nail x="170" y="-76"/>
+			<source ref="id8"/>
+			<target ref="id9"/>
+			<label kind="synchronisation" x="-314" y="-17">semSignal[barberReady][barber_id]!</label>
 		</transition>
 		<transition>
-			<source ref="id5"/>
-			<target ref="id4"/>
-			<nail x="-127" y="-289"/>
-			<nail x="-25" y="-289"/>
+			<source ref="id13"/>
+			<target ref="id8"/>
+			<label kind="assignment" x="-93" y="42">incr_seats()</label>
+		</transition>
+		<transition>
+			<source ref="id10"/>
+			<target ref="id13"/>
+			<label kind="synchronisation" x="59" y="-25">semGo[accessWRSeats][barber_id]?</label>
+		</transition>
+		<transition>
+			<source ref="id11"/>
+			<target ref="id10"/>
+			<label kind="synchronisation" x="119" y="-263">semWait[accessWRSeats][barber_id]!</label>
+		</transition>
+		<transition>
+			<source ref="id12"/>
+			<target ref="id11"/>
+			<label kind="synchronisation" x="-51" y="-399">semGo[custReady][barber_id]?</label>
+		</transition>
+		<transition>
+			<source ref="id14"/>
+			<target ref="id12"/>
+			<label kind="synchronisation" x="-272" y="-340">semWait[custReady][barber_id]!</label>
+			<nail x="-204" y="-314"/>
+			<nail x="-170" y="-331"/>
+		</transition>
+	</template>
+	<template>
+		<name>Semaphore</name>
+		<parameter>const int id,  const int queue_size, const int init_val</parameter>
+		<declaration>//The value of the semaphore
+bool value = init_val;
+//The queue of the semaphore
+// -1 denotes an empty array entry
+int[-1,N-1] queue[queue_size];
+//An auxiliary variable used to temporarily store process id
+meta int[0,N-1] q;
+
+void initialize ()
+{
+  for (i : int[0,queue_size-1])
+      {queue[i] = -1;}
+}
+
+void deQueue ()
+{
+  for (i : int[1,queue_size-1])
+    queue[i-1] = queue[i];
+  queue[queue_size-1] = -1;
+}
+
+void enQueue (int p)
+{
+  int i = 0;
+  while (queue[i]&gt;=0){i++;};
+  queue[i]=p;
+}
+
+int[0,N-1] headQueue ( )
+{
+  return queue[0];
+}
+
+bool fullQueue ( )
+{
+  for (i : int[0,queue_size-1])
+   {
+     if (queue[i]==-1) {return false;}
+   }
+  return true;
+}
+
+bool emptyQueue ( )
+{
+  return (queue[0]==-1);
+}</declaration>
+		<location id="id15" x="384" y="64">
+			<committed/>
+		</location>
+		<location id="id16" x="608" y="320">
+			<committed/>
+		</location>
+		<location id="id17" x="352" y="96">
+			<name x="288" y="64">overflow</name>
+		</location>
+		<location id="id18" x="480" y="192">
+		</location>
+		<init ref="id15"/>
+		<transition>
+			<source ref="id15"/>
+			<target ref="id18"/>
+			<label kind="assignment" x="408" y="72">initialize()</label>
+		</transition>
+		<transition>
+			<source ref="id18"/>
+			<target ref="id18"/>
+			<label kind="select" x="256" y="192">p:int[0,N-1]</label>
+			<label kind="guard" x="256" y="208">emptyQueue()</label>
+			<label kind="synchronisation" x="256" y="224">semSignal[id][p]?</label>
+			<label kind="assignment" x="256" y="240">value=1</label>
+			<nail x="352" y="192"/>
+			<nail x="352" y="224"/>
+		</transition>
+		<transition>
+			<source ref="id18"/>
+			<target ref="id16"/>
+			<label kind="select" x="552" y="104">p:int[0,N-1]</label>
+			<label kind="guard" x="552" y="120">value==1</label>
+			<label kind="synchronisation" x="552" y="136">semWait[id][p]?</label>
+			<label kind="assignment" x="552" y="152">value=0,
+q=p</label>
+			<nail x="608" y="192"/>
+		</transition>
+		<transition>
+			<source ref="id18"/>
+			<target ref="id17"/>
+			<label kind="select" x="240" y="112">p:int[0,N-1]</label>
+			<label kind="guard" x="240" y="128">value==0 &amp;&amp; fullQueue()</label>
+			<label kind="synchronisation" x="240" y="144">semWait[id][p]?</label>
+		</transition>
+		<transition>
+			<source ref="id16"/>
+			<target ref="id18"/>
+			<label kind="synchronisation" x="512" y="208">semGo[id][q]!</label>
+		</transition>
+		<transition>
+			<source ref="id18"/>
+			<target ref="id16"/>
+			<label kind="select" x="360" y="280">p:int[0,N-1]</label>
+			<label kind="guard" x="360" y="296">not emptyQueue()</label>
+			<label kind="synchronisation" x="360" y="312">semSignal[id][p]?</label>
+			<label kind="assignment" x="360" y="328">q=headQueue(),
+deQueue()</label>
+			<nail x="480" y="320"/>
+		</transition>
+		<transition>
+			<source ref="id18"/>
+			<target ref="id18"/>
+			<label kind="select" x="480" y="-8">p:int[0,N-1]</label>
+			<label kind="guard" x="480" y="8">value==0 &amp;&amp; not fullQueue()</label>
+			<label kind="synchronisation" x="480" y="24">semWait[id][p]?</label>
+			<label kind="assignment" x="480" y="40">enQueue(p)</label>
+			<nail x="480" y="64"/>
+			<nail x="512" y="64"/>
 		</transition>
 	</template>
 	<system>// Place template instantiations here.
+sem_barberReady = Semaphore(barberReady, 1, 0);
+sem_accessWRSeats = Semaphore(accessWRSeats, 1, 1);
+sem_custReady = Semaphore(custReady, 1, 0);
+
 Barber = barber();
+
+//gantt
 Customer = customer();
+
 // List one or more processes to be composed into a system.
 system barber, customer;
     </system>
